@@ -18,7 +18,7 @@
  * @return PTCB* 
  */
 PTCB* spawn_PTCB(TCB* tcb, Task task, int argl, void* args){
-  PTCB* ptcb = (PTCB*)xmalloc(sizeof(PTCB)); /*memory allocation for PTCB*/
+  PTCB* ptcb = (PTCB*)xmalloc(sizeof(PTCB));  /* memory allocation for PTCB */
   
   ASSERT(ptcb != NULL);
   ptcb->tcb = tcb;
