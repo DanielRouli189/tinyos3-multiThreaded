@@ -2,7 +2,6 @@
 #include "tinyos.h"
 
 
-/* this is still empty */
 Fid_t sys_Socket(port_t port)
 {
 	return NOFILE;
