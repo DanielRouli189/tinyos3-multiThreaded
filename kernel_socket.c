@@ -1,7 +1,7 @@
 
 #include "tinyos.h"
 
-
+/* This is a test */
 Fid_t sys_Socket(port_t port)
 {
 	return NOFILE;
