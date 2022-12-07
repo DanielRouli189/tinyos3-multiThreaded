@@ -229,11 +229,12 @@ void release_TCB(TCB* tcb)
 	Mutex_Unlock(&active_threads_spinlock);
 }
 
-/*
+/***************************************
  *
  * Scheduler
  *
- */
+ ***************************************/
+
 
 /*
  *  Note: the scheduler routines are all in the non-preemptive domain.
@@ -479,13 +480,13 @@ void sleep_releasing(Thread_state state, Mutex* mx, enum SCHED_CAUSE cause,
  */
 void upgrade(){
 	rlnode* current = NULL;
-	int i = 0;
+	int i = QUEUE_NUMBER-1;
 
-	while(!is_rlist_empty(&SCHED[i]) && i < QUEUE_NUMBER){
+	while(!is_rlist_empty(&SCHED[i]) && i > 0){
 		current = rlist_pop_front(&SCHED[i]);
-		current->tcb->priority++;
 		rlist_append(&SCHED[i+1], current);
-		++i;
+		current->tcb->priority = QUEUE_NUMBER - 1;
+		--i;
 	}
 	
 	numOfYieldCalls = 0;
@@ -501,8 +502,6 @@ void yield(enum SCHED_CAUSE cause)
 	
 	/* We must stop preemption but save it! */
 	int preempt = preempt_off;
-
-	numOfYieldCalls++;
 
 	TCB* current = CURTHREAD; /* Make a local copy of current process, for speed */
 
@@ -527,9 +526,11 @@ void yield(enum SCHED_CAUSE cause)
 	/* Save the current TCB for the gain phase */
 	CURCORE.previous_thread = current;
 
+	
+
 	/* if the thread is waiting for I/O grant it the highest priority */
 	if(cause == SCHED_IO && current->priority < QUEUE_NUMBER-1)
-		current->priority = QUEUE_NUMBER-1;
+		current->priority++;
 	
 	/* if the thread's quantum has expired decrease its priority */
 	if(cause == SCHED_QUANTUM && current->priority > 0)
@@ -538,7 +539,8 @@ void yield(enum SCHED_CAUSE cause)
 	/* if the thread is locked on contention decrease its priority*/
 	if(cause == SCHED_MUTEX && current->last_cause == SCHED_MUTEX && current->priority > 0)
 		current->priority--;
-
+	
+	numOfYieldCalls++;
 	/* after a certain number of yield calls move every thread to the highest priority*/
 	if(numOfYieldCalls > CALL_LIMIT) upgrade();
 

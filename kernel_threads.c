@@ -173,11 +173,9 @@ int sys_ThreadDetach(Tid_t tid)
   */
 void sys_ThreadExit(int exitval)
 {
-  /* Cleaning up the entire list. */
   PCB* curproc = CURPROC;
   TCB* curThread = cur_thread();
   PTCB* ptcb = curThread->ptcb;
-  
   
   ptcb->exitval = exitval;
   ptcb->exited = 1;
@@ -186,12 +184,22 @@ void sys_ThreadExit(int exitval)
 
   curproc->thread_count--;
 
+  if(curproc->thread_count == 0)
+    cleanup_process(curproc);
+  
+  kernel_sleep(EXITED, SCHED_USER);
+}
+
+/**
+ * @brief Clean up the current process.
+ * 
+ * @param curproc 
+ */
+void cleanup_process(PCB* curproc) {
   /* Reparent any children of the exiting process to the 
      initial task
   */
   PCB* initpcb = get_pcb(1);
-  if(curproc->thread_count != 0) goto finish;
-
   if(get_pid(curproc) != 1) {
     while(!is_rlist_empty(& curproc->children_list)) {
       rlnode* child = rlist_pop_front(& curproc->children_list);
@@ -214,7 +222,6 @@ void sys_ThreadExit(int exitval)
   ASSERT(is_rlist_empty(& curproc->children_list));
   ASSERT(is_rlist_empty(& curproc->exited_list));
 
-
   /* 
     Do all the other cleanup we want here, close files etc. 
   */
@@ -234,9 +241,9 @@ void sys_ThreadExit(int exitval)
   }
 
  /* clean up the entire list */
-  while(!is_rlist_empty(&(curproc->ptcb_list))){
+  while(!is_rlist_empty(&(curproc->ptcb_list)))
     rlist_pop_front(&(curproc->ptcb_list));
-  }
+
 
   /* Disconnect my main_thread */
   curproc->main_thread = NULL;
@@ -245,7 +252,4 @@ void sys_ThreadExit(int exitval)
   curproc->pstate = ZOMBIE;
 
   /* Bye-bye cruel world */
-
-finish:
-  kernel_sleep(EXITED, SCHED_USER);
 }

@@ -10,9 +10,6 @@
   @ingroup kernel
   @brief 
 
-  This file contains the definition of the multithreading API,
-  required in the first part of the implementation of TinyOs3
-  regarding multithreaded system calls.
 
   @{
 */ 
@@ -27,7 +24,7 @@
  *
  *******************************************/
 
-#define PIPE_BUFFER_SIZE 8096
+#define PIPE_BUFFER_SIZE 8192
 
 /**
   @brief The pipe control block

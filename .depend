@@ -18,7 +18,8 @@ kernel_dev.o: kernel_dev.c kernel_cc.h kernel_sys.h bios.h tinyos.h \
  kernel_sched.h util.h kernel_dev.h kernel_streams.h kernel_proc.h
 kernel_init.o: kernel_init.c bios.h tinyos.h kernel_sched.h util.h \
  kernel_proc.h kernel_dev.h kernel_streams.h
-kernel_pipe.o: kernel_pipe.c tinyos.h
+kernel_pipe.o: kernel_pipe.c tinyos.h kernel_pipe.h kernel_dev.h util.h \
+ bios.h
 kernel_proc.o: kernel_proc.c kernel_cc.h kernel_sys.h bios.h tinyos.h \
  kernel_sched.h util.h kernel_proc.h kernel_threads.h kernel_streams.h \
  kernel_dev.h unit_testing.h

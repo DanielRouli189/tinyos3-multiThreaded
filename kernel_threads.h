@@ -137,6 +137,17 @@ int sys_ThreadDetach(Tid_t tid);
   */
 void sys_ThreadExit(int exitval);
 
+/**
+ * @brief Clean up the current process.
+ * 
+ * This function will be executed when the current
+ * process has only one thread remaining and it wants
+ * to exit. 
+ * 
+ * @param curproc 
+ */
+void cleanup_process(PCB* curproc);
+
 /** @} */
 
 #endif 
