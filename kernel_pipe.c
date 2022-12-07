@@ -29,16 +29,20 @@ int pipe_read(void* pipecb_t, char* buf, unsigned int n){
 }
 
 
-/** @brief Close operation.
+/** @brief Close writer operation.
 
 Close the stream object, deallocating any resources held by it.
 This function returns 0 is it was successful and -1 if not.
-
 */
 int pipe_writer_close(void* _pipecb){
 	return -1;
 }
 
+/** @brief Close reader operation.
+
+Close the stream object, deallocating any resources held by it.
+This function returns 0 is it was successful and -1 if not.
+*/
 int pipe_reader_close(void* _pipecb){
 	return -1;
 }
