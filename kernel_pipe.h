@@ -24,7 +24,7 @@
  *
  *******************************************/
 
-#define PIPE_BUFFER_SIZE 8192
+#define PIPE_BUFFER_SIZE 16384
 
 /**
   @brief The pipe control block
@@ -44,6 +44,10 @@ typedef struct pipe_control_block {
 
   char BUFFER[PIPE_BUFFER_SIZE]; /**< @brief bounded (cyclic) byte buffer */
 } pipe_cb;
+
+
+
+pipe_cb* init_pipe(FCB* fcb[2]);
 
 
 /**
@@ -107,5 +111,10 @@ Possible errors are:
 int pipe_writer_close(void* _pipecb);
 
 int pipe_reader_close(void* _pipecb);
+
+int return_error(void* pipe_t, char *buf, unsigned int n);
+
+int return_error_const(void* pipe_t, const char *buf, unsigned int n);
+
 
 #endif
