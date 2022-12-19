@@ -185,5 +185,3 @@ int return_error(void* pipe_t, char *buf, unsigned int n){
 int return_error_const(void* pipe_t, const char *buf, unsigned int n){
 	return -1;
 }
-
-

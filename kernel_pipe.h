@@ -1,5 +1,5 @@
 #ifndef __KERNEL_PIPE_H
-#define __KERNEL_PIPE_h
+#define __KERNEL_PIPE_H
 
 
 /**
