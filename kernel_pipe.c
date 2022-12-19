@@ -5,20 +5,30 @@
 #include "kernel_dev.h"
 #include "kernel_streams.h"
 
-file_ops reader_operations = {
-	.Open = NULL,
+static file_ops reader_operations = {
+	.Open = (void*) return_error, /* This can be replaced with NULL or be put to comments*/
 	.Read = pipe_read,
 	.Write = return_error_const,
 	.Close = pipe_reader_close
 };
 
-file_ops writer_operations = {
-	.Open = NULL,
+static file_ops writer_operations = {
+	.Open = (void*) return_error, /* This can be replaced with NULL or be put to comments*/
 	.Read = return_error,
 	.Write = pipe_write,
 	.Close = pipe_writer_close
 };
 
+
+/**
+ * @brief Initialize a pipe. 
+ * 
+ * This function initializes a new pipe from the given FCB, 
+ * assuming an FCB has been already reserved.
+ * 
+ * @param fcb 
+ * @return pipe_cb* 
+ */
 pipe_cb* init_pipe(FCB* fcb[2]){
 	pipe_cb* pipe = (pipe_cb*)xmalloc(sizeof(pipe_cb));
 
@@ -34,6 +44,13 @@ pipe_cb* init_pipe(FCB* fcb[2]){
 	return pipe;
 }
 
+/**
+	@brief Construct and return a pipe.
+
+
+	@param pipe a pointer to a pipe_t structure for storing the file ids
+	@returns 0 on success, -1 on error.
+*/
 int sys_Pipe(pipe_t* pipe)
 {
 	Fid_t fid[2];
@@ -73,14 +90,14 @@ int pipe_write(void* pipecb_t, const char* buf, unsigned int n){
 
 	int position = 0;
 	
-	int condition = (pipe->w_position + 1)% PIPE_BUFFER_SIZE == pipe->r_position && pipe->reader != NULL;
 	
-	while(condition) 
+	while(check_condition(pipe)) 
 		kernel_wait(&(pipe->has_space), SCHED_PIPE);
 
 	
 	while(position != n && position < PIPE_BUFFER_SIZE) {
-		if(condition) break;
+		if(check_condition(pipe))
+			break;
 
 		pipe->BUFFER[pipe->w_position] = buf[position];
 		pipe->w_position = (pipe->w_position + 1)% PIPE_BUFFER_SIZE;
@@ -89,6 +106,17 @@ int pipe_write(void* pipecb_t, const char* buf, unsigned int n){
 
 	kernel_broadcast(&(pipe->has_data));
 	return position;
+}
+
+/**
+ * @brief if the writing position is equal to the reading position, and
+ * the reader is still open, return 1 else return 0.
+ * 
+ * @param pipe 
+ * @return 0 or 1
+ */
+int check_condition(pipe_cb* pipe){
+	return (pipe->w_position + 1)% PIPE_BUFFER_SIZE == pipe->r_position && pipe->reader != NULL;
 }
 
 /** @brief Read operation.
@@ -136,6 +164,8 @@ int pipe_read(void* pipecb_t, char* buf, unsigned int n){
 
 Close the stream object, deallocating any resources held by it.
 This function returns 0 is it was successful and -1 if not.
+	@param _pipecb pointer to void.
+	@return 0 is it was successful and -1 if not.
 */
 int pipe_writer_close(void* _pipecb){
 	pipe_cb* pipe = (pipe_cb*) _pipecb;
@@ -158,6 +188,8 @@ int pipe_writer_close(void* _pipecb){
 
 Close the stream object, deallocating any resources held by it.
 This function returns 0 is it was successful and -1 if not.
+	@param _pipecb pointer to void.
+	returns 0 is it was successful and -1 if not.
 */
 int pipe_reader_close(void* _pipecb){
 	pipe_cb* pipe = (pipe_cb*) _pipecb;

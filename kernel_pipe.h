@@ -4,12 +4,11 @@
 
 /**
   @file kernel_pipe.h
-  @brief TinyOS kernel: 
+  @brief TinyOS kernel
 
   @defgroup 
   @ingroup kernel
   @brief 
-
 
   @{
 */ 
@@ -83,6 +82,8 @@ Possible errors are:
 - There was a I/O runtime problem.
 */
 int pipe_write(void* pipecb_t, const char* buf, unsigned int n);
+
+int check_condition(pipe_cb* pipe);
 
 /** @brief Read operation.
 
