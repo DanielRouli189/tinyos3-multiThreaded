@@ -1,6 +1,6 @@
 
 #include "tinyos.h"
-
+#include "kernel_socket.h"
 
 Fid_t sys_Socket(port_t port)
 {

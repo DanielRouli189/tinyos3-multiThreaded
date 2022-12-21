@@ -26,7 +26,7 @@ kernel_proc.o: kernel_proc.c kernel_cc.h kernel_sys.h bios.h tinyos.h \
 kernel_sched.o: kernel_sched.c kernel_cc.h kernel_sys.h bios.h tinyos.h \
  kernel_sched.h util.h kernel_proc.h kernel_threads.h kernel_streams.h \
  kernel_dev.h unit_testing.h
-kernel_socket.o: kernel_socket.c tinyos.h
+kernel_socket.o: kernel_socket.c tinyos.h kernel_socket.h
 kernel_streams.o: kernel_streams.c util.h tinyos.h kernel_cc.h \
  kernel_sys.h bios.h kernel_sched.h kernel_streams.h kernel_dev.h \
  kernel_proc.h

@@ -96,8 +96,7 @@ int pipe_write(void* pipecb_t, const char* buf, unsigned int n){
 
 	
 	while(position != n && position < PIPE_BUFFER_SIZE) {
-		if(check_condition(pipe))
-			break;
+		if(check_condition(pipe)) break;
 
 		pipe->BUFFER[pipe->w_position] = buf[position];
 		pipe->w_position = (pipe->w_position + 1)% PIPE_BUFFER_SIZE;
