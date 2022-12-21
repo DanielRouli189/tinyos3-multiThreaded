@@ -14,8 +14,8 @@
 */ 
 
 #include "tinyos.h"
-#include "kernel_dev.h"
 #include "util.h"
+#include "kernel_dev.h"
 
 /*******************************************
  *
@@ -43,6 +43,7 @@ typedef struct pipe_control_block {
 
   char BUFFER[PIPE_BUFFER_SIZE]; /**< @brief bounded (cyclic) byte buffer */
 } pipe_cb;
+
 
 
 

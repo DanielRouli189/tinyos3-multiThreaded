@@ -3,7 +3,57 @@
 
 
 #include "tinyos.h"
+#include "util.h"
+#include "kernel_dev.h"
+#include "kernel_pipe.h"
 
+typedef enum socket_type {
+    SOCKET_LISTENER,
+    SOCKET_UNBOUND,
+    SOCKET_PEER
+} socket_type;
+
+
+typedef struct socket_listener {
+    rlnode queue;
+    CondVar req_available;
+} socket_listener;
+
+typedef struct socket_unbound {
+    rlnode unbound_socket;
+} socket_unbound;
+
+typedef struct socket_peer {
+    //socket_cb* peer;
+    pipe_cb* read_pipe;
+    pipe_cb* write_pipe;
+} socket_peer;
+
+
+typedef struct socket_control_block {
+    unsigned int refcount;
+    FCB* fcb;
+    socket_type type;
+    port_t port;
+
+    union{
+        socket_listener listener;
+        socket_unbound unbound;
+        socket_peer peer;
+    };
+} socket_cb;
+
+
+typedef struct request_connection {
+    int admitted; 
+    socket_cb* peer;
+
+    CondVar connected_cv;
+    rlnode queue_node;
+} request_connection;
+
+
+socket_cb* PORTMAP[MAX_PORT + 1];
 
 
 /**
@@ -129,5 +179,11 @@ int sys_Connect(Fid_t sock, port_t port, timeout_t timeout);
        - the file id @c sock is not legal (a connected socket stream).
 */
 int sys_ShutDown(Fid_t sock, shutdown_mode how);
+
+int socket_read(void* socketcb_t, char* buf, unsigned int len); /**< @brief Forward declaration*/
+
+int socket_write(void* socketcb_t, const char* buf, unsigned int len); /**< @brief Forward declaration*/
+
+int socket_close(void* socketcb_t); /**< @brief Forward declaration */
 
 #endif
